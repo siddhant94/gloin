@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /home/sid/Desktop/Workspace/gloin
+./gloin >> /home/sid/Desktop/Workspace/gloin/cron.log
