@@ -57,7 +57,7 @@ func init() {
 // TODO: Make this extensible with flags supporting various options, such as mkt for market, date for getting specific
 // TODO: day, etc
 var getWallpaperCmd = &cobra.Command{
-	Use:   "wallpaper []",
+	Use:   "get-wallpaper",
 	Short: "Downloads Bing daily wallpaper",
 	Long:  `This downloads the latest Bing Wallpaper of the day to user specified directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -99,8 +99,10 @@ func downloadWallpaper(metaData bingMetaData, dirPath string) (bool, string) {
 	imageFile := strings.Replace(strings.ToLower(metaData.Images[0].Title), " ", "_", -1)
 	imageFile = strings.Replace(imageFile, "’", "", -1)
 	imageFile = strings.Replace(imageFile, "!", "", -1)
+
 	fmt.Println(dirPath + "/" + imageFile + jpegExt)
-	file, err := os.Create(dirPath + "/" + imageFile + ".jpeg") // Perm : 0666
+	fmt.Println("Created above file")
+	file, err := os.Create(dirPath + "/" + imageFile + jpegExt) // Perm : 0666
 	//fmt.Println(dirPath + imageFile + ".jpeg")
 	if err != nil {
 		log.Printf("Error creating file : %v \n", err)

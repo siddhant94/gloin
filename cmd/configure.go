@@ -12,19 +12,20 @@ import (
 )
 
 type State struct {
-	ImageDir    string `json:"image_dir"`// Path to default pictures directory for storing and changing wallpapers.
-	LatestImage string `json:"latest_image"`
+	ImageDir    string       `json:"image_dir"` // Path to default pictures directory for storing and changing wallpapers.
+	LatestImage string       `json:"latest_image"`
 	Scheduler   scheduleMeta `json:"scheduler"`
-	Os          string `json:"os"`
+	Os          string       `json:"os"`
 }
 
 type scheduleMeta struct {
-	Scheduled            bool `json:"scheduled"`
-	Interval             time.Duration `json:"interval"`
-	LocalChangeTimestamp time.Time `json:"local_change_timestamp"`
+	Scheduled  bool          `json:"scheduled"`
+	Interval   time.Duration `json:"interval"`
+	ChangeTime time.Time     `json:"change_time"`
 }
 
 var state State
+var defaultTime, _ = time.Parse("15:04", "09:00")
 
 const ConfigFilename = "state.json"
 
@@ -48,24 +49,37 @@ func init() {
 }
 
 var configureCmd = &cobra.Command{
-	Use:   "configure </path/to/directory>",
+	Use:   "configure",
 	Short: "Configure user-settings for Gloin.",
 	Long:  `Takes in desired values for Gloin's settings from user and stores in json file.'`,
-	Args:  cobra.ExactArgs(1),
+	//Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		state.ImageDir = args[0] // /home/sid/Desktop/Workspace/bing-wallpapers
-		// Check if directory exists, if not create one
-		if _, err := os.Stat(state.ImageDir); os.IsNotExist(err) {
-			fmt.Println("Directory path does not exists, creating directory")
-			err = os.Mkdir(state.ImageDir, 0664)
+		// TODO: keep the questioin and state json key in map
+		directoryPath := getUserInput("Enter Directory path (absolute) where Backgrounds would be downloaded. ")
+		if !pathExists(directoryPath) { // If Path doesn't exists, create it.
+			err := os.Mkdir(directoryPath, 0664)
 			if err != nil {
-				log.Printf("Error creating directory - %s, \n %v \n", state.ImageDir, err)
+				log.Printf("Error creating directory - %s, \n %v \n", directoryPath, err)
 				return
 			}
-			fmt.Println("Successfully created directory - " + state.ImageDir)
 		}
-		// Write to a file for persistence
+		state.ImageDir = directoryPath
+		schedule := getUserInput("Do you want to schedule it for  daily change? Press y for Yes | n for No")
+		if schedule == "n" {
+			fmt.Println("Generating Configuration")
+		} else if schedule == "y" {
+			fmt.Println("Scheduling Daily update. ")
+			t := getUserInput("Please enter update timestamp in hh:mm (24 hr format)")
+			parsedTime, err := time.Parse("15:04", t)
+			if err != nil {
+				fmt.Println("Error parsing time, setting to default time i.e. 09:00 hrs : %v \n", err)
+				state.Scheduler.ChangeTime = defaultTime
+			} else {
+				state.Scheduler.ChangeTime = parsedTime // "0 8 * * *"
+			}
+		}
 		writeState(state)
+		return
 	},
 }
 
