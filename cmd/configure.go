@@ -45,9 +45,7 @@ func init() {
 		return
 
 	}
-	fmt.Printf("STATE : \n %+v \n", state)
-	fmt.Println(state.Scheduler.ChangeTime.Hour())
-	fmt.Println(state.Scheduler.ChangeTime.Minute())
+	//fmt.Printf("STATE : \n %+v \n", state)
 }
 
 var configureCmd = &cobra.Command{
