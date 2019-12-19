@@ -12,10 +12,10 @@ import (
 //}
 
 func init() {
-	rootCmd.AddCommand(scheduleCmd)
+	rootCmd.AddCommand(setCmd)
 }
 
-var scheduleCmd = &cobra.Command{
+var setCmd = &cobra.Command{
 	//TODO: add option for path argument to act as just setting wallpaper
 	Use:   "set",
 	Short: "Sets background to Bing wallpaper of the day",

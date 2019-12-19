@@ -46,6 +46,8 @@ func init() {
 
 	}
 	fmt.Printf("STATE : \n %+v \n", state)
+	fmt.Println(state.Scheduler.ChangeTime.Hour())
+	fmt.Println(state.Scheduler.ChangeTime.Minute())
 }
 
 var configureCmd = &cobra.Command{
@@ -70,7 +72,7 @@ var configureCmd = &cobra.Command{
 		} else if schedule == "y" {
 			fmt.Println("Scheduling Daily update. ")
 			t := getUserInput("Please enter update timestamp in hh:mm (24 hr format)")
-			parsedTime, err := time.Parse("15:04", t)
+			parsedTime, err := time.Parse("15:04", t) //TODO: layout should be configurable
 			if err != nil {
 				fmt.Println("Error parsing time, setting to default time i.e. 09:00 hrs : %v \n", err)
 				state.Scheduler.ChangeTime = defaultTime
